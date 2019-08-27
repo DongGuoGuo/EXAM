@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="css/index.css">
+<link rel="stylesheet" href="/EXAM/postbar/layui/css/layui.css">
+<link rel="icon" href="/EXAM/images/logo.png">
+</head>
+<div class="dvhead">
+	<div class="dvlogo">
+		<a href="index.html">你问我答</a>
+	</div>
+</div>
+
+
+
+
+<fieldset class="layui-elem-field layui-field-title"
+	style="margin: 50px;">
+	<legend>帖子内容</legend>
+	<div style="padding: 20px; background-color: #F2F2F2;">
+		<div class="layui-row layui-col-space15">
+			<div class="layui-col-md12">
+				<div class="layui-card">
+					<div class="layui-card-header postbartitle questitle">标题</div>
+					<div class="layui-card-body postbarcontent quescontent">内容</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</fieldset>
+
+<fieldset class="layui-elem-field layui-field-title"
+	style="margin: 50px;">
+	<legend>热门解答</legend>
+	<ul class="layui-timeline">
+		
+		
+	</ul>
+
+
+</fieldset>
+
+<fieldset class="layui-elem-field layui-field-title"
+	style="margin: 50px;">
+	<legend>回复</legend>
+	<div>
+		<textarea id="content" name="content"
+			style="width: 1040px; height: 450px; visibility: hidden;"></textarea>
+	</div>
+	
+	<div class="layui-form-item">
+          <button class="layui-btn" lay-filter="postbar_receive" lay-submit>立即回复</button>
+    </div>
+
+
+</fieldset>
+
+
+<script src="/EXAM/postbar/layui/layui.js"></script>
+<script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript">
+    //获取参数pbid
+	var search = location.search;
+	var pbid = ''
+	if(search.indexOf('=')>0){
+		pbid = search.split('=')[1];
+		console.info(pbid);
+	}
+	
+	layui.use([ 'element', 'layer', 'layedit','form' ], function() {
+		var element = layui.element;
+		var layer = layui.layer;
+		var $ = layui.jquery;
+		var layedit = layui.layedit;
+		var form = layui.form;
+		var edit = layedit.build('content'); //建立编辑器
+		//coninfo();
+		$.ajax({
+			url:'/EXAM/show_postbar_detail.action',
+			type:'post',
+			dataType:'json',
+			data:{'pbid':pbid},
+			success:function(result){
+				var postbar = result.postbar;
+				var rpostbars = result.rpostbars;
+				rander_postbar(postbar);
+				rander_rpostbar(rpostbars);
+				
+			}
+			
+		});
+		
+		function rander_postbar(postbar){
+			$('.questitle').text(postbar.questitle);
+			$('.quescontent').append(postbar.quescontent);
+			
+		}
+		
+		var href = window.location.href;
+		var baseUrl = href.split("//")[0]+"//"+href.split("//")[1].split("/")[0];
+		function rander_rpostbar(rpostbars){
+			var length = rpostbars.length;
+			var html = '';
+			for (var i = 0; i < length; i++) {
+				$.ajax({ //获得发帖人的详细信息（姓名，头像）
+					 url:'/EXAM/get_userdetail_by_userid.action',
+					 async: false, 
+					 data:{'userid':rpostbars[i].userid},
+					 dataType:'json',
+					 type:'get',
+					 success:function(result){
+						 userdetail = result.userdetail;
+						 html =  '<li class="layui-timeline-item"><i'+
+						    '	class="layui-icon layui-timeline-axis"></i>'+
+							'	<div class="layui-timeline-content layui-text">'+
+							'	    <img alt="" src="'+baseUrl+'/'+userdetail.icon+'" style="width: 80px;height: 80px">'+
+							'		<h3 class="layui-timeline-title">'+userdetail.user.usertruename+'||'+rpostbars[i].rqtime+'</h3>'+
+							'		<p>'+rpostbars[i].rquescontent+
+							'		</p>'+
+							'		<span class="layui-breadcrumb layui-hide" style="float: right;"> <a class="cainai" data-rpbid='+rpostbars[i].rpbid+'>采纳</a></a>'+
+							'		</span>'+
+							'	</div>'+
+							'</li>';
+							
+						$('.layui-timeline').append(html);
+						
+					 }
+					 
+				 });
+			}
+			element.init();
+		}
+		
+		form.on('submit(postbar_receive)', function(data){
+			var content = layedit.getContent(edit)
+			console.info(pbid+''+content);
+			$.ajax({ //异步请求回帖
+				url:'/EXAM/receive_postbar.action',
+				data:{'pbid':pbid,'rquescontent':content},
+				type:'post',
+				dataType:'json',
+				success:function(result){
+					layer.msg(result.msg,{time:2000},function(){
+						if(result.msg == '回帖成功'){
+							location.reload();
+						}
+					});
+				}
+				
+			});
+			return false;//回帖成功
+	});
+
+	});
+</script>
+<body>
+</body>
+</html>
+

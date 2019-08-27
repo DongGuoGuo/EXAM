@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+     http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+     http://www.springframework.org/schema/context
+     http://www.springframework.org/schema/context/spring-context-4.0.xsd
+     http://www.springframework.org/schema/mvc    
+     http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd"> 
+
+    <!-- 组件扫描 --> 
+	<context:component-scan base-package="com.hl.controller"/>
+	<!-- 加载注解驱动 -->
+	<mvc:annotation-driven/>
+	<!-- 文件上传视图解析器 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">  
+	    <!-- 设置上传文件的最大尺寸为1GB -->  
+	    <property name="maxUploadSize">  
+	        <value>1073741824</value>  
+	    </property>
+	    <!-- 设置文件上传时获取文件名使用的编码 -->
+	    <property name="defaultEncoding">
+	    	<value>utf-8</value>
+	    </property>  
+	 </bean>
+    
+	
+	<!-- springmvc非注解
+	<bean name="/login.action" class="com.sxt.controller.UserController"></bean>
+	 -->
+
+<!--  
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<mvc:exclude-mapping path="/css/**" />
+			<mvc:exclude-mapping path="/log_reg.jsp" />
+			<mvc:exclude-mapping path="/images/**" />
+			<mvc:exclude-mapping path="/js/**" />
+			<bean class="com.hl.interceptor.LoginInterceptor"></bean> 
+		</mvc:interceptor>
+	</mvc:interceptors>
+-->	
+</beans>

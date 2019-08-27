@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hl.mapper.HomeworkMapper">
+	
+	<insert id="insertHomework" parameterType="Homework" useGeneratedKeys="true" keyProperty="homeworkid">
+	  insert into homework (issuerid,title,format,content) 
+	  values(#{issuerid},#{title},#{format},#{content})
+	</insert>
+	
+	<insert id="insertHomeForClass">
+	  insert into clazz_homework (hid,classid) 
+	  values(#{0},#{1})
+	</insert>
+	
+	<select id="getHomeworkFromClass" parameterType="int" resultType="Homework">
+	  select h.* from homework h
+	  inner join clazz_homework ch 
+	  on ch.hid = h.homeworkid
+	  inner join user_clazz uc
+	  on uc.classid = ch.classid
+	  where uc.studentid = #{0}
+	  
+	</select>
+	
+	<select id="getHomeworkFromStudent" parameterType="int" resultType="Homework">
+	  select h.* from homework h
+	  inner join user_homework uh 
+	  on uh.hid = h.homeworkid
+	  where uh.finishuserid = #{0}
+	</select>
+	
+</mapper>

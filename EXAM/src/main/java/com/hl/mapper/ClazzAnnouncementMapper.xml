@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hl.mapper.ClazzAnnouncementMapper">
+	
+	<insert id="insertClazzAnnouncement" parameterType="ClazzAnnouncement">
+	   insert into clazz_announcement (classid,catime,catitle,camsg)
+	   values(#{classid},#{catime},#{catitle},#{camsg})
+	
+	</insert>
+	
+	<select id="getClassAnnouncementOfUser" parameterType="int" resultType="ClazzAnnouncement">
+	  select ca.*,c.classname from clazz_announcement ca
+	  inner join clazz c
+	  on ca.classid = c.classid
+	  inner join user_clazz uc
+	  on uc.classid = c.classid
+	  where uc.studentid = #{0}
+	  order by ca.catime
+	
+	</select>
+	
+	
+</mapper>
